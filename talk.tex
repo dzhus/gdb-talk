@@ -1,0 +1,192 @@
+\documentclass[onlymath]{beamer}
+\usepackage{fontspec}
+\usepackage{xunicode,xltxtra}
+\usepackage{polyglossia}
+\usepackage{xltxtra}
+\usepackage{fancybox}
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{language=C, basicstyle=\ttfamily, frame=single}
+\lstdefinelanguage{gdb}
+{morekeywords={run,break,info,threads}}
+\newcommand\tw\textwidth
+\newcommand\neword\emph
+\newcommand\code\texttt
+
+\usefonttheme{professionalfonts}
+\usetheme[secheader]{Boadilla}
+\usecolortheme{whale}
+
+\setsansfont[Mapping=tex-text]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{DejaVu Sans Mono}
+\setmainlanguage{russian}
+
+\title{GDB, Emacs и Google Summer of Code }
+\author{Дмитрий Джус}
+\institute{МГТУ им. Н.Э.Баумана}
+\date{2009}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{План}
+  \tableofcontents
+\end{frame}
+
+\section{GDB}
+\begin{frame}
+  \frametitle{GNU Debugger — свободный отладчик}
+
+  \begin{itemize}
+  \item Переносимый отладчик для различных языков, включая C, C++ и Fortran
+  \item Разработка начата rms в 1986 году в рамках проекта GNU и ныне
+    продолжается силами сообщества при поддержке крупных компаний
+  \item Стандартный отладчик для многих современных Unix-систем
+  \item Используется в качестве компонента для ряда интегрированных
+    сред разработки
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Командный интерпретатор GDB}
+  Тут пример запуска и работы с GDB (текст прямо на слайде)
+\end{frame}
+
+\begin{frame}
+  \frametitle{Новые возможности в GDB 7.0}
+  \begin{itemize}
+  \item Безостановочная отладка многопоточных приложений
+
+  \item Поддержка Python в качестве языка расширения
+
+  \item Обратимая отладка
+  \end{itemize}
+\end{frame}
+
+\subsection{Отладка в режиме нон-стоп}
+\begin{frame}
+  \frametitle{Зачем нужна безостановочная отладка}
+  \begin{itemize}
+  \item Многопоточные приложения — тренд
+  \item Нужно обеспечить недеструктивный контроль: отлаживать только
+    ту нить, в которой проблемы
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{pthread-test.c}
+  \begin{itemize}
+  \item Запускаем пять нитей, последняя из которых
+    \code{f2()}
+\begin{lstlisting}
+for (i = 0; i < 5; i++)
+{
+    pthread_create(&threads[i],
+                   NULL, 
+                   ((i + 1) % 5) ? f2 : f1, 
+                   (void *)i);
+}
+\end{lstlisting}
+\item \code{f1()} и \code{f2()} — рабочие функции
+\begin{lstlisting}
+void *f1(void *thread_id) { while (1); }
+void *f2(void *thread_id) { /* bug here */ }
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\section{Emacs}
+\begin{frame}
+  \frametitle{GNU Emacs}
+
+  \begin{itemize}
+  \item Расширяемая настраиваемая самодокументируемая операционная
+    среда
+  \item Компактное переносимое ядро на C
+  \item Большая часть функций описана на Emacs Lisp
+  \item Широкие возможности по взаимодействию с окружающей средой
+    (сеть, IPC)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Emacs как IDE}
+
+  \begin{itemize}
+  \item GDB запускается как подчинённый процесс
+  \item Обмен командами идёт с помощью Machine Interface
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{CLI vs. MI}
+  
+\end{frame}
+
+\begin{frame}
+ \frametitle{Пример работы с MI}
+
+Foobar
+\end{frame}
+
+\section{GSoC}
+\begin{frame}
+  \frametitle{Google Summer of Code}
+
+  \begin{itemize}
+  \item Международная летняя программа для студентов
+  \item Под руководством ментора из числа опытных разработчиков
+    студент работает над проектом в области свободного \textsc{ПО}
+  \item С 2005 года в программе успешно приняли участие 2500 студентов
+    из 98 стран
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Этапы GSoC}
+  \begin{itemize}
+  \item В начале года \neword{организации} подают заявки на участие,
+    на основе которых их принимают в программу и распределяют слоты
+    для участников
+  \item В марте \neword{Студенты} подают заявки с описанием своих
+    \neword{проектов}, которые рассматриваются организациями
+  \item На основе заявок определяется список студентов, которые будут
+    участвовать в программе, назначаются \neword{менторы}
+  \item Основная работа начинается в конце мая
+  \item В середине июля — \neword{смотр}
+  \item Проекты проходят \neword{финальный смотр} в середине августа
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tips \& Tricks}
+  \begin{itemize}
+  \item Успешнее оказываются проекты тех студентов, которые общались
+    со своими организациями до программы
+    
+  \item Заявка на участие должна отражать готовность работать над
+    проектом
+
+  \item План работ помогает разобраться в задаче
+    
+  \item Постоянная работа с собственными мыслями и наблюдениями
+    
+  \item Нужно уделять внимание взаимодействию с сообществом
+  \end{itemize}
+\end{frame}
+\appendix
+\begin{frame}
+  \frametitle{О чём был доклад}
+  \begin{itemize}
+  \item Свободный отладчик GDB развивается и отвечает на вызовы
+    времени
+  \item Emacs — гибкая и многофункциональная рабочая среда
+  \item Лето с Google — прекрасная возможность получить опыт и
+    принести пользу сообществу и себе
+  \end{itemize}
+\end{frame}
+\end{document}
