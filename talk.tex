@@ -18,7 +18,9 @@
 \newcommand\tw\textwidth
 \newcommand\neword\emph
 \newcommand\code\texttt
-
+\newcommand{\cenfig}[2]{\begin{figure}\centering\includegraphics[scale=#1]{#2}
+  \end{figure}}
+  
 \usefonttheme{professionalfonts}
 \usetheme[secheader]{Boadilla}
 \usecolortheme{whale}
@@ -46,6 +48,10 @@
 \section{GDB}
 \begin{frame}
   \frametitle{GNU Debugger — свободный отладчик}
+  \begin{columns}
+    \column{.3\textwidth}
+    \cenfig{0.5}{archer.jpg}
+    \column{.7\textwidth}
 
   \begin{itemize}
   \item Переносимый отладчик для различных языков, включая C, C++ и Fortran
@@ -58,6 +64,7 @@
   \item Различные интерфейсы (CLI для ручной работы, Machine Interface
     для IDE)
   \end{itemize}
+\end{columns}
 \end{frame}
 
 \begin{frame}
@@ -156,11 +163,16 @@ Breakpoint 1, f2 (tid=0x0) at pthread.c:5
 \begin{subsection}{Python-стероиды для GDB}
 \begin{frame}
   \frametitle{Зачем встраивать Python в отладчик}
+  \begin{columns}
+    \column{.3\textwidth}
+    \cenfig{0.2}{python.png}
+    \column{.7\textwidth}
   \begin{itemize}
   \item В процессе работы возникает необходимость расширять функционал
     отладчика
   \item Стандартный язык сценариев GDB примитивен и ограничен
   \end{itemize}
+\end{columns}
 \end{frame}
 
 \begin{frame}
@@ -261,6 +273,10 @@ $2 = std::list = {
 \section{Emacs}
 \begin{frame}
   \frametitle{GNU Emacs}
+  \begin{columns}
+    \column{.3\textwidth}
+    \cenfig{0.2}{emacs.png}
+    \column{.7\textwidth}
   \begin{itemize}
   \item Расширяемая настраиваемая самодокументируемая операционная
     среда
@@ -269,6 +285,7 @@ $2 = std::list = {
   \item Широкие возможности по взаимодействию с окружающей средой
     (сеть, IPC)
   \end{itemize}
+\end{columns}
 \end{frame}
 
 \begin{frame}
@@ -277,6 +294,7 @@ $2 = std::list = {
   \item GDB запускается как подчинённый процесс
   \item Обмен командами идёт с помощью Machine Interface
   \end{itemize}
+  \cenfig{0.2}{emacs-gdb.png}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -312,6 +330,10 @@ $2 = std::list = {
 \section{GSoC}
 \begin{frame}
   \frametitle{Google Summer of Code}
+  \begin{columns}
+    \column{.3\textwidth}
+    \cenfig{0.1}{google.jpg}
+    \column{.7\textwidth}
   \begin{itemize}
   \item Международная летняя программа для студентов
   \item Под руководством ментора из числа опытных разработчиков
@@ -319,6 +341,7 @@ $2 = std::list = {
   \item С 2005 года в программе успешно приняли участие 2500 студентов
     из 98 стран
   \end{itemize}
+\end{columns}
 \end{frame}
 
 \begin{frame}
