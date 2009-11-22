@@ -280,15 +280,24 @@ $2 = std::list = {
   \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{CLI vs. MI}
-  
-\end{frame}
-
-\begin{frame}
- \frametitle{Пример работы с MI}
-
-Foobar
+\begin{frame}[fragile]
+  \frametitle{GDB в составе IDE}
+  \begin{itemize}
+  \item При работе через Machine Interface (\code{gdb -i=mi})
+    информация выдаётся в структурированном виде
+\begin{lstlisting}[style=gdbsession]
+(gdb) -stack-info-frame
+^done,frame={level="0",
+             addr="0x0804888f",
+             func="main",
+             file="stl.c",
+             fullname="/home/dzhus/stl.c",
+             line="10"}
+\end{lstlisting}
+  \item Ранее Emacs использовал устарейвший командный интерфейс
+    «с аннотациями»
+  \item Структура ответов MI хорошо ложится на модель JSON
+  \end{itemize}
 \end{frame}
 
 \section{GSoC}
