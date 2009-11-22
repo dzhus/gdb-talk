@@ -10,8 +10,10 @@
 \lstset{language=C, basicstyle=\ttfamily, escapechar=|, frame=single}
 \lstdefinelanguage{gdb}
 {morekeywords={run,break,info,thread,set,print}}
+\lstdefinestyle{session}
+{frameround=tttt}
 \lstdefinestyle{gdbsession}
-{language=gdb,frameround=tttt}
+{language=gdb,style=session}
 
 \newcommand\tw\textwidth
 \newcommand\neword\emph
@@ -285,26 +287,36 @@ $2 = std::list = {
   \begin{itemize}
   \item При работе через Machine Interface (\code{gdb -i=mi})
     информация выдаётся в структурированном виде
-\begin{lstlisting}[style=gdbsession]
+\begin{lstlisting}[style=session]
 (gdb) -stack-info-frame
 ^done,frame={level="0",
-             addr="0x0804888f",
-             func="main",
+             addr="0x0804888f",func="main",
              file="stl.c",
              fullname="/home/dzhus/stl.c",
              line="10"}
 \end{lstlisting}
+  \item Интерфейс уведомляет клиента об изменениях состояния
+\begin{lstlisting}[style=session]
+=thread-created,id="6",group-id="22226"
+*running,thread-id="6"
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Чего не хватало в Emacs}
+  \begin{itemize}
   \item Ранее Emacs использовал устарейвший командный интерфейс
     «с аннотациями»
-  \item Структура ответов MI хорошо ложится на модель JSON
-  \end{itemize}
+  \item Не было поддержки безостановочной отладки
+  \end{itemize}  
 \end{frame}
 
 \section{GSoC}
 \begin{frame}
   \frametitle{Google Summer of Code}
-
   \begin{itemize}
+
   \item Международная летняя программа для студентов
   \item Под руководством ментора из числа опытных разработчиков
     студент работает над проектом в области свободного \textsc{ПО}
@@ -349,7 +361,7 @@ $2 = std::list = {
 \begin{frame}
   \frametitle{Проект «GDB/MI Emacs migration»}
   \begin{itemize}
-  \item Emacs-интерфейс к GDB полностью переведён на MI
+  \item Emacs-интерфейс к GDB полностью переведён на MI (JSON)
   \item За счёт перехода на MI теперь поддерживается non-stop отладка
     и просмотр разных нитей/фреймов одновременно
   \item Множественные улучшения и рефакторинг кода
