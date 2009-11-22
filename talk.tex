@@ -5,10 +5,14 @@
 \usepackage{xltxtra}
 \usepackage{fancybox}
 \usepackage{graphicx}
+
 \usepackage{listings}
 \lstset{language=C, basicstyle=\ttfamily, escapechar=|, frame=single}
 \lstdefinelanguage{gdb}
 {morekeywords={run,break,info,thread,set}}
+\lstdefinestyle{gdbsession}
+{language=gdb,frameround=tttt}
+
 \newcommand\tw\textwidth
 \newcommand\neword\emph
 \newcommand\code\texttt
@@ -100,7 +104,7 @@ void *f2(void *tid) { /* bug here */ }
 
 \begin{frame}[fragile]
   \frametitle{Как было раньше}
-\Ovalbox{\begin{lstlisting}[language=gdb,frame=none]
+\begin{lstlisting}[style=gdbsession]
 (gdb)|\pause| break f2
 (gdb)|\pause| run
 |\ldots|
@@ -114,12 +118,12 @@ Breakpoint 1, f2 (tid=0x0) at pthread.c:5
   2  f1 (tid=0x0) at pthread.c:4
   1  in __kernel_vsyscall ()
 (gdb)
-\end{lstlisting}}
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Как стало}
-\Ovalbox{\begin{lstlisting}[language=gdb,frame=none]
+\begin{lstlisting}[style=gdbsession]
 (gdb)|\pause| set non-stop on
 (gdb)|\pause| set target-async on
 (gdb)|\pause| break f2
@@ -135,7 +139,7 @@ Breakpoint 1, f2 (tid=0x0) at pthread.c:5
   2 (running)
 * 1 (running)
 (gdb)|\pause|
-\end{lstlisting}}
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}
@@ -208,7 +212,7 @@ class stl_str(gdb.Function):
 stl_str()
 \end{lstlisting}
   \item Новая функция доступна из GDB
-\begin{lstlisting}[language=gdb,frameround=tttt]
+\begin{lstlisting}[style=gdbsession]
 (gdb) print $stl_str(s)
 $1 = "foobar"
 \end{lstlisting}
@@ -226,7 +230,7 @@ $1 = "foobar"
     подгружаются в GDB
   \item Визуализаторы \emph{автоматически} используются для переменных
     подходящего типа
-\begin{lstlisting}[language=gdb,frameround=tttt]
+\begin{lstlisting}[style=gdbsession]
 (gdb) print s
 $1 = "foobar"
 (gdb) print l
