@@ -150,6 +150,111 @@ Breakpoint 1, f2 (tid=0x0) at pthread.c:5
   \end{itemize}
 \end{frame}
 
+\begin{subsection}{Python-стероиды для GDB}
+\begin{frame}
+  \frametitle{Зачем встраивать Python в отладчик}
+  \begin{itemize}
+  \item В процессе работы возникает необходимость расширять функционал
+    отладчика
+  \item Стандартный язык сценариев GDB примитивен и ограничен
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Как работает поддержка Python}
+  \begin{itemize}
+  \item Новая команда \code{python} для выполнения Python-кода внутри
+    отладчика
+  \item Python-модуль \code{gdb} предоставляет доступ к информации и
+    объектам отлаживаемой программы
+  \item Описанные на Python функции можно вызывать из GDB
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Простая задача для Python API}
+  \begin{itemize}
+  \item По умолчанию STL-контейнеры выводятся в GDB в малочитабельном
+    виде
+\begin{lstlisting}[language=C++]
+std::list<std::string> l;
+std::string s = "foobar";
+l.push_back(s);
+\end{lstlisting}
+\begin{lstlisting}[language=gdb,frameround=tttt]
+(gdb) print s
+$1 = {static npos=4294967295, 
+_M_dataplus={<std::allocator<char>>= 
+ {<__gnu_cxx::new_allocator<char>>=
+  {<No data fields>}, <No data fields>},
+_M_p=0x804b014 "foobar"}}
+\end{lstlisting}
+\item Не STL’ем единым
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Создание новых функций для отладчика}
+  \begin{itemize}
+  \item Наследованный от \code{gdb.Function} класс описывает функцию
+\begin{lstlisting}[language=Python]
+class stl_str(gdb.Function):
+  def __init__(self):
+    gdb.Function.__init__(self, "stl_str")
+
+  def invoke (self, val):
+    return val['_M_dataplus']['_M_p'].string()
+stl_str()
+\end{lstlisting}
+  \item Новая функция доступна из GDB
+\begin{lstlisting}[language=gdb,frameround=tttt]
+(gdb) print $stl_str(s)
+$1 = "foobar"
+\end{lstlisting}
+  \item Созданную функцию приходится вызывать явно
+  \end{itemize}
+\end{frame}  
+
+\begin{frame}[fragile]
+  \frametitle{Pretty-printing}
+  \begin{itemize}
+  \item Библиотеки (libstdc++, Glib) могут устанавливать в систему
+    Python-модули, которые выполняют отображение сложных структур
+    данных
+  \item Соответствующие объектным файлам отлаживаемой программы модули
+    подгружаются в GDB
+  \item Визуализаторы \emph{автоматически} используются для переменных
+    подходящего типа
+\begin{lstlisting}[language=gdb,frameround=tttt]
+(gdb) print s
+$1 = "foobar"
+(gdb) print l
+$2 = std::list = {
+  [0] = "foobar"
+}
+\end{lstlisting}
+  \item Одинаково работает в CLI \& MI
+  \end{itemize}
+\end{frame}
+\end{subsection}
+
+\begin{frame}
+  \frametitle{Расширение программ языками высокого уровня}
+  \begin{itemize}
+  \item Что дала поддержка Python в GDB:
+    \begin{itemize}
+    \item Использование распространённого языка для развития функций
+      отладчика
+    \item Поддержка визуализации сложных структур данных
+    \item Другие, ещё не исследованные приложения
+    \end{itemize}
+  \item Подход применяется со времён Emacs: наличие в программе
+    гибкого и выразительного языка расширения позволяет быстрее и
+    проще расширять её возможности
+  \item Другие примеры: Mozilla (XUL), Gimp (Scheme)
+  \end{itemize}
+\end{frame}
+
 \section{Emacs}
 \begin{frame}
   \frametitle{GNU Emacs}
