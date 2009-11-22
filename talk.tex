@@ -6,9 +6,9 @@
 \usepackage{fancybox}
 \usepackage{graphicx}
 \usepackage{listings}
-\lstset{language=C, basicstyle=\ttfamily, frame=single}
+\lstset{language=C, basicstyle=\ttfamily, escapechar=|, frame=single}
 \lstdefinelanguage{gdb}
-{morekeywords={run,break,info,threads}}
+{morekeywords={run,break,info,thread,set}}
 \newcommand\tw\textwidth
 \newcommand\neword\emph
 \newcommand\code\texttt
@@ -78,10 +78,9 @@
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{pthread-test.c}
+  \frametitle{pthread.c}
   \begin{itemize}
-  \item Запускаем пять нитей, последняя из которых
-    \code{f2()}
+  \item Запускаем пять нитей, одна из которых выполняет \code{f2()}
 \begin{lstlisting}
 for (i = 0; i < 5; i++)
 {
@@ -91,11 +90,63 @@ for (i = 0; i < 5; i++)
                    (void *)i);
 }
 \end{lstlisting}
-\item \code{f1()} и \code{f2()} — рабочие функции
+\item \code{f1()} и \code{f2()} — рабочие функции; \code{f2()} имеет проблему
 \begin{lstlisting}
-void *f1(void *thread_id) { while (1); }
-void *f2(void *thread_id) { /* bug here */ }
+void *f1(void *tid) { while(1); }
+void *f2(void *tid) { /* bug here */ }
 \end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Как было раньше}
+\Ovalbox{\begin{lstlisting}[language=gdb,frame=none]
+(gdb)|\pause| break f2
+(gdb)|\pause| run
+|\ldots|
+Breakpoint 1, f2 (tid=0x0) at pthread.c:5
+5	void *f2(void *tid) { /* bug here */ }
+(gdb)|\pause| info thread
+* 6  f2 (tid=0x0) at pthread.c:5
+  5  f1 (tid=0x0) at pthread.c:4
+  4  f1 (tid=0x0) at pthread.c:4
+  3  f1 (tid=0x0) at pthread.c:4
+  2  f1 (tid=0x0) at pthread.c:4
+  1  in __kernel_vsyscall ()
+(gdb)
+\end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Как стало}
+\Ovalbox{\begin{lstlisting}[language=gdb,frame=none]
+(gdb)|\pause| set non-stop on
+(gdb)|\pause| set target-async on
+(gdb)|\pause| break f2
+(gdb)|\pause| run
+|\ldots|
+Breakpoint 1, f2 (tid=0x0) at pthread.c:5
+5	void *f2(void *tid) { /* bug here */ }
+(gdb)|\pause| info thread
+  6 f2 (tid=0x0) at pthread.c:5
+  5 (running)
+  4 (running)
+  3 (running)
+  2 (running)
+* 1 (running)
+(gdb)|\pause|
+\end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Поддержка со стороны IDE}
+  \begin{itemize}
+  \item При безостановочной отладке обмен данными с GDB уже не
+    синхронный («запрос — ответ»)
+  \item Асинхронный стиль работы требует от клиента готовности в любой
+    момент реагировать на поступающие от отладчика уведомления о
+    событиях
+  \item Eclipse и Emacs поддерживают новый режим
   \end{itemize}
 \end{frame}
 
