@@ -361,6 +361,29 @@ $2 = std::list = {
 \end{frame}
 
 \begin{frame}
+  \frametitle{Проект «GDB/MI Emacs migration»}
+  \begin{itemize}
+  \item Emacs-интерфейс к GDB полностью переведён на MI (JSON-парсер)
+  \item За счёт перехода на MI теперь поддерживается безостановочная
+    отладка и просмотр разных нитей/фреймов одновременно
+  \item Множественные улучшения и рефакторинг кода
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Опыт GSoC}
+  \begin{itemize}
+  \item Прямой доступ к Emacs CVS позволил получить больше отзывов от
+    пользователей (багрепорты с июля)
+  \item Помогли обсуждения в рассылках для разработчиков GDB и Emacs и
+    в \textt{comp.lang.lisp}
+  \item Рабочий процесс: личный Mercurial-репозиторий, откуда
+    изменения передавались в CVS Емакса
+  \item Потребовалось больше рефакторинга, чем казалось сначала
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
   \frametitle{Tips \& Tricks}
   \begin{itemize}
   \item Успешнее оказываются проекты тех студентов, которые общались
@@ -374,16 +397,6 @@ $2 = std::list = {
   \item Постоянная работа с собственными мыслями и наблюдениями
     
   \item Нужно уделять внимание взаимодействию с сообществом
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Проект «GDB/MI Emacs migration»}
-  \begin{itemize}
-  \item Emacs-интерфейс к GDB полностью переведён на MI (JSON)
-  \item За счёт перехода на MI теперь поддерживается non-stop отладка
-    и просмотр разных нитей/фреймов одновременно
-  \item Множественные улучшения и рефакторинг кода
   \end{itemize}
 \end{frame}
 
