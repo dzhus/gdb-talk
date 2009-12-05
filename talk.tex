@@ -115,7 +115,7 @@ for (i = 0; i < 5; i++)
 {
     pthread_create(&threads[i],
                    NULL, 
-                   ((i + 1) % 5) ? f2 : f1, 
+                   ((i + 1) % 5) ? f1 : f2, 
                    (void *)i);
 }
 \end{lstlisting}
