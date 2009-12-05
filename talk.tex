@@ -6,6 +6,10 @@
 \usepackage{fancybox}
 \usepackage{graphicx}
 
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\tikzset{tight/.style={inner sep=2pt}}
+
 \usepackage{listings}
 \lstset{language=C, basicstyle=\ttfamily, escapechar=|, frame=single}
 \lstdefinelanguage{gdb}
@@ -360,7 +364,7 @@ $2 = std::list = {
 \end{frame}
 
 \begin{frame}
-  \frametitle{Этапы GSoC}
+  \frametitle{Как устроена программа GSoC}
   \begin{itemize}
   \item В начале года \neword{организации} подают заявки на участие,
     на основе которых их принимают в программу и распределяют слоты
@@ -375,25 +379,144 @@ $2 = std::list = {
   \end{itemize}
 \end{frame}
 
+\subsection{Проект «GDB/MI Emacs migration»}
 \begin{frame}
-  \frametitle{Проект «GDB/MI Emacs migration»}
+  \frametitle{Основные достижения}
   \begin{itemize}
-  \item Emacs-интерфейс к GDB полностью переведён на MI (JSON-парсер)
+  \item Emacs-интерфейс к GDB полностью переведён на MI
   \item За счёт перехода на MI теперь поддерживается безостановочная
     отладка и просмотр разных нитей/фреймов одновременно
   \item Множественные улучшения и рефакторинг кода
+    \begin{itemize}
+    \item JSON-парсер вместо регулярных выражений
+    \item Снижено связывание за счёт использования модели с оповещениями
+      для обновления информации в буферах IDE
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{«Нет» регулярным выражениям}
+  \begin{itemize}
+  \item JSON — простой и гибкий формат обмена структурированными
+    данными (объекты с полями + списки)
+  \item Формат ответов MI хорошо ложится на модель JSON
+    \begin{itemize}
+    \item \textbf{MI}
+\begin{lstlisting}
+locals=[{name="threads", type="pthread_t [5]"},
+        {name="i", type="int",value="3"}]
+\end{lstlisting}
+
+    \item \textbf{JSON}
+\begin{lstlisting}
+{"locals":[{"name":"threads", 
+            "type":"pthread_t [5]"},
+           {"name":"i", 
+            "type":"int", 
+            "value":"3"}]}
+\end{lstlisting}
+    \end{itemize}
+  \item Использовать рег. выражения для разбора MI неудобно и
+    неправильно (КС-грамматика)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{MI в Lisp}
+  \begin{itemize}
+  \item MI тривиально переводится в JSON, после чего разбирается
+    JSON-парсером
+    \begin{itemize}
+    \item \textbf{MI}
+\begin{lstlisting}
+locals=[{name="threads", type="pthread_t [5]"},
+        {name="i", type="int",value="3"}]
+\end{lstlisting}
+    \item \textbf{Lisp}
+\begin{lstlisting}
+((locals .
+         [((type . "pthread_t [5]")
+           (name . "threads"))
+          ((value . "3")
+           (type . "int")
+           (name . "i"))]))
+\end{lstlisting}
+    \end{itemize}
+
+  \item Работать с естественными Лисп-структурами проще, чем с
+    результатами применения регулярных выражений
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Pub \& sub}
+  \begin{itemize}
+  \item Буфер каждого типа обновлялся явным образом: расходы на поиск
+    и недостаточная гибкость
+    \begin{columns}
+      \column{.4\textwidth}
+      \begin{figure}[h]
+        \centering
+        \begin{tikzpicture}[style=tight]
+          \node at (0, 0) [rectangle] (phantom) {\phantom{updater}};
+          \node at ($ (phantom) + (0, -1) $)
+          [draw=red!50!black, thick, rectangle, rounded corners=2pt] (updater) {updater};
+          
+          \foreach \an / \num in {-1/1, 0/2, 1/3} { \draw node at
+            ($ (updater.south) + (\an,-1) $)
+            [draw, circle] (b\num) {$\mathbf{b_\num}$};
+            
+            \draw[->] (updater) to (b\num); 
+          }
+        \end{tikzpicture}
+        
+        \color{red!50!black}{Было}
+      \end{figure}
+      \begin{lstlisting}[language=Lisp]
+(defun gdb-update ()
+  (update-locals)
+  (update-registers)
+  ...)
+\end{lstlisting}
+      \column{.4\textwidth}
+      \begin{figure}[h]
+        \centering
+        \begin{tikzpicture}[style=tight]
+          \node at (0, 0) [draw, rectangle] (updater) {updater};
+          
+          \node at ($ (updater) + (0, -1) $) 
+          [draw=green!50!black, thick, rectangle, rounded corners=2pt] (pub)  {publisher};
+          
+          \draw[->] (updater) -- (pub); 
+          
+          \foreach \an / \num in {-1/1, 0/2, 1/3} { \draw node at
+            ($ (pub.south) + (\an,-1) $)
+            [draw, circle] (b\num) {$\mathbf{b_\num}$};
+            
+            \draw[->, dashed] (pub) to (b\num); 
+          }
+        \end{tikzpicture}
+        
+        \color{green!50!black}{Стало}
+      \end{figure}
+      \begin{lstlisting}[language=Lisp]
+(defun gdb-update ()
+  (emit-signal 
+   buf-publisher
+   'update))
+      \end{lstlisting}
+    \end{columns}
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Опыт GSoC}
   \begin{itemize}
-  \item Прямой доступ к Emacs CVS позволил получить больше отзывов от
-    пользователей (багрепорты с июля) и разработчиков Emacs
-  \item Помогли обсуждения в рассылках для разработчиков GDB и Emacs и
-    в \tt{comp.lang.lisp}
-  \item Рабочий процесс: личный Mercurial-репозиторий, откуда
-    изменения передавались в CVS Емакса
+  \item Обсуждения в рассылках для разработчиков GDB и Emacs и в {\tt
+      comp.lang.lisp}
+  \item Прямой доступ к Emacs CVS
+  \item Рабочий процесс: личный Mercurial плюс upstream CVS.
   \item Потребовалось больше рефакторинга, чем казалось сначала
   \end{itemize}
 \end{frame}
