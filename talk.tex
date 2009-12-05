@@ -166,6 +166,34 @@ Breakpoint 1, f2 (tid=0x0) at pthread.c:5
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{Асинхронность}
+  \begin{itemize}
+  \item В безостановочном режиме управляющие команды (\code{continue})
+    относятся только к текущей нити
+  \item Для раздельного управления нитями нужна возможность посылать
+    команды, когда программа выполняется
+\begin{lstlisting}[style=gdbsession]
+(gdb)|\pause| info thread
+  6 f2 (tid=0x4) at pthread.c:5
+  5 (running)
+  4 f1 (tid=0x2) at pthread.c:4
+  3 f1 (tid=0x1) at pthread.c:4
+* 2 f1 (tid=0x0) at pthread.c:4
+  1 (running)
+(gdb)|\pause| continue &
+Continuing.
+(gdb)|\pause| info thread
+  6 f2 (tid=0x4) at pthread.c:5
+  5 (running)
+  4 f1 (tid=0x2) at pthread.c:4
+  3 f1 (tid=0x1) at pthread.c:4
+* 2 (running)
+  1 (running)
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
 \begin{frame}
   \frametitle{Поддержка со стороны IDE}
   \begin{itemize}
@@ -174,7 +202,6 @@ Breakpoint 1, f2 (tid=0x0) at pthread.c:5
   \item Асинхронный стиль работы требует от клиента готовности в любой
     момент реагировать на поступающие от отладчика уведомления о
     событиях
-  \item Eclipse и Emacs поддерживают новый режим
   \end{itemize}
 \end{frame}
 \end{subsection}
@@ -286,6 +313,14 @@ $2 = std::list = {
     гибкого и выразительного языка расширения позволяет быстрее и
     проще расширять её возможности
   \item Другие примеры: Mozilla (XUL), Gimp (Scheme)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Курс на IDE}
+  \begin{itemize}
+  \item Новые возможности требуют поддержки со стороны IDE
+  \item Безостановочная отладка уже поддерживается Eclipse и Emacs
   \end{itemize}
 \end{frame}
 
