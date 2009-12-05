@@ -37,7 +37,7 @@
 \author{Дмитрий Джус}
 \institute{МГТУ им. Н.Э.Баумана}
 \date{2009}
-
+\setbeamersize{text margin left=0pt,text margin right=0pt}
 \begin{document}
 
 \begin{frame}
@@ -333,6 +333,7 @@ $2 = std::list = {
   \item Большая часть функций описана на Emacs Lisp
   \item Широкие возможности по взаимодействию с окружающей средой
     (сеть, IPC)
+  \item Emacs — преимущественно текстовая среда
   \end{itemize}
 \end{columns}
 \end{frame}
@@ -342,9 +343,19 @@ $2 = std::list = {
   \begin{itemize}
   \item GDB запускается как подчинённый процесс
   \item Обмен командами идёт с помощью Machine Interface
+  \item С различных буферах показана информация от отладчика: стек,
+    точки останова, нити (с возможностью управления), локальные
+    переменные и регистры
+  \item Дополнительно открываются буферы с дизассемблированным кодом и
+    памятью
   \end{itemize}
-  \cenfig{0.2}{emacs-gdb.png}
 \end{frame}
+
+
+\begin{frame}[plain]
+  \includegraphics[height=\paperheight]{emacs-gdb.png}
+\end{frame}
+
 
 \begin{frame}[fragile]
   \frametitle{GDB в составе IDE}
